@@ -41,7 +41,7 @@ if(EMMY_USE_LUA_SOURCE)
     endif()
 endif()
 
-add_subdirectory(third-party/libuv-1.46.0)
+add_subdirectory(third-party/libuv)
 add_subdirectory(emmy_debugger)
 add_subdirectory(emmy_core)
 
