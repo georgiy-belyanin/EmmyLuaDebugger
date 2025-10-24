@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 project(emmy_core)
 
 add_library(emmy_core SHARED)
+SET_TARGET_PROPERTIES(emmy_core PROPERTIES LINK_FLAGS -Wl,-undefined,dynamic_lookup)
 
 add_dependencies(
         emmy_core

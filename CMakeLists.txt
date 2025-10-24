@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.11)
 project (emmy)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(EMMY_LUA_VERSION "54" CACHE STRING "Lua version: jit/51/52/53/54")
 set(EMMY_CORE_VERSION "DEV" CACHE STRING "Emmy core version: DEV/version number")
@@ -28,6 +29,10 @@ elseif(${EMMY_LUA_VERSION} STREQUAL "jit")
 endif()
 
 add_definitions(-DEMMY_CORE_VERSION="${EMMY_CORE_VERSION}")
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+find_package(Tarantool)
+include_directories(${TARANTOOL_INCLUDE_DIRS})
 
 if(EMMY_USE_LUA_SOURCE)
     add_definitions(-DEMMY_USE_LUA_SOURCE)

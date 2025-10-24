@@ -49,4 +49,10 @@ bool EndWith(const std::string &source, const std::string &end) {
 	return strncmp(end.data(), source.data() + (sourceSize - endSize), endSize) == 0;
 }
 
+extern "C" {
+	#include <tarantool/module.h>
+}
 
+void FiberYield() {
+	fiber_sleep(0.1);
+}
