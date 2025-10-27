@@ -115,6 +115,10 @@ else ()
 
 endif (EMMY_USE_LUA_SOURCE)
 
+target_link_libraries(
+	emmy_debugger
+	PUBLIC ${TARANTOOL_INSTALL_LIBDIR}
+)
 
 target_link_libraries(
         emmy_debugger

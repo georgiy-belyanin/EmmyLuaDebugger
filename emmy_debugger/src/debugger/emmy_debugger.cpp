@@ -18,6 +18,7 @@
 #include <cassert>
 #include <sstream>
 #include <cstring>
+#include <iostream>
 #include "emmy_debugger/emmy_facade.h"
 #include "emmy_debugger/debugger/hook_state.h"
 #include "emmy_debugger/api/lua_version.h"
@@ -663,7 +664,9 @@ void Debugger::EnterDebugMode() {
 		std::unique_lock<std::mutex> lockEval(evalMtx);
 		if (evalQueue.empty() && blocking) {
 			lockEval.unlock();
-			cvRun.wait(lock, [this] { return !blocking || !evalQueue.empty(); });
+			while (blocking && evalQueue.empty()) {
+				FiberYield();
+			}
 			lockEval.lock();
 		}
 		if (!evalQueue.empty()) {

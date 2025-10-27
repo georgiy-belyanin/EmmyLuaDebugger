@@ -9,9 +9,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: windows-latest, target: windows, platform: win32-x64}
-          - { os: windows-latest, target: windows, platform: win32-x86, cmake_arch: "-A Win32"}
-          - { os: ubuntu-latest, target: linux, platform: linux-x64, zig_build: true}
+          - { os: ubuntu-latest, target: linux, platform: linux-x64}
+          - { os: ubuntu-24.04-arm, target: linux, platform: linux-arm64}
           - { os: macos-latest, target: darwin, platform: darwin-x64}
           - { os: macos-latest, target: darwin, platform: darwin-arm64}
     steps:
@@ -31,14 +30,14 @@ jobs:
       with:
         node-version: 20.x
     - uses: actions/checkout@v4
-    - name: Build-windows
-      if: startsWith(matrix.os, 'windows')
+      with:
+        submodules: recursive
+    - name: Install-tarantool-linux
+      if: startsWith(matrix.os, 'ubuntu')
       run: |
-        mkdir build
-        cd build
-        cmake .. ${{ matrix.cmake_arch }} -G "Visual Studio 17 2022" -DCMAKE_USER_MAKE_RULES_OVERRIDE="${{ github.workspace }}/cmake/flags_override.cmake" -DEMMY_CORE_VERSION=${{env.TAG}}
-        cmake --build . --config Release
-        cmake --install . --config Release --prefix ${{ github.workspace }}/artifact/
+        curl -L https://tarantool.io/release/3/installer.sh | bash
+        sudo apt-get -y install tarantool-dev
+        sudo mkdir -p /usr/local/lib/tarantool
     - name: Build-linux
       if: startsWith(matrix.os, 'ubuntu')
       run: |
@@ -46,7 +45,7 @@ jobs:
           sudo snap install zig --classic --beta
           mkdir -p build
           # 使用zig-build.cmake配置文件编译C++项目
-          cmake -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/zig-build.cmake -DCMAKE_BUILD_TYPE=Release -DEMMY_CORE_VERSION=${{env.TAG}}
+          cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DEMMY_CORE_VERSION=${{env.TAG}}
           cmake --build build --config Release
           cmake --install build --config Release --prefix ${{ github.workspace }}/artifact/
         else
@@ -56,6 +55,11 @@ jobs:
           cmake --build . --config Release
           cmake --install . --config Release --prefix ${{ github.workspace }}/artifact/
         fi
+    - name: Install-tarantool-macos
+      if: startsWith(matrix.os, 'macos')
+      run: |
+        brew install tarantool
+        sudo mkdir -p /usr/local/lib/tarantool
     - name: Build-macosx
       if: startsWith(matrix.os, 'macos')
       run: |

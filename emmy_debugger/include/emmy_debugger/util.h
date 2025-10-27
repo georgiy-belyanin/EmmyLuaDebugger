@@ -11,4 +11,4 @@ struct CaseInsensitiveLess final {
 // 直到C++ 20才有endwith，这里自己写一个
 bool EndWith(const std::string &source, const std::string &end);
 
-
+void FiberYield();
